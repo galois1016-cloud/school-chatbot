@@ -4,17 +4,20 @@
   <meta charset="UTF-8" />
   <title>대전전민고등학교 교무업무 챗봇</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f5f7fb;
+      --bg: #f7f6f3;
       --primary: #2563eb;
       --primary-soft: #e0ebff;
       --border: #d4d4d8;
-      --text-main: #111827;
-      --text-sub: #6b7280;
+      --text-main: #2d2d2d;
+      --text-sub: #6b6b6b;
       --user-bubble: #2563eb;
       --bot-bubble: #ffffff;
-      --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.16);
       --radius-lg: 18px;
       --radius-full: 999px;
     }
@@ -26,42 +29,42 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #e0e7ff 0, #f5f7fb 45%, #ffffff 100%);
+      font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #f1ece1 0, #f7f6f3 40%, #fdfcf9 100%);
       color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 18px;
     }
 
     .app-shell {
       width: 100%;
-      max-width: 640px;
-      background: rgba(255, 255, 255, 0.96);
+      max-width: 720px;
+      background: #fdfcf9;
       border-radius: 28px;
       box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(148, 163, 184, 0.3);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(209, 213, 219, 0.6);
     }
 
     .app-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.9);
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: linear-gradient(120deg, rgba(37, 99, 235, 0.06), rgba(249, 250, 251, 0.96));
+      gap: 12px;
+      background: linear-gradient(120deg, rgba(244, 244, 245, 0.8), rgba(255, 255, 255, 0.98));
     }
 
     .bot-avatar {
       width: 34px;
       height: 34px;
       border-radius: 16px;
-      background: radial-gradient(circle at 30% 20%, #ffffff 0, #dbeafe 40%, #2563eb 100%);
+      background: radial-gradient(circle at 30% 20%, #ffffff 0, #e0ecff 40%, #2563eb 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -102,14 +105,14 @@
 
     .messages {
       flex: 1;
-      padding: 14px 16px 8px;
+      padding: 16px 18px 10px;
       overflow-y: auto;
       scroll-behavior: smooth;
     }
 
     .message-row {
       display: flex;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .message-row.user {
@@ -117,26 +120,29 @@
     }
 
     .message-bubble {
-      max-width: 82%;
-      padding: 8px 12px;
+      max-width: 86%;
+      padding: 10px 14px;
       border-radius: var(--radius-lg);
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.7;
       word-wrap: break-word;
-      white-space: pre-wrap;
+      white-space: normal;
     }
 
     .message-row.bot .message-bubble {
       background: var(--bot-bubble);
-      border: 1px solid rgba(226, 232, 240, 0.9);
-      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      border-radius: 18px;
+      border-bottom-left-radius: 6px;
       color: var(--text-main);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
     }
 
     .message-row.user .message-bubble {
       background: var(--user-bubble);
       color: #ffffff;
-      border-bottom-right-radius: 4px;
+      border-radius: 18px;
+      border-bottom-right-radius: 6px;
     }
 
     .message-meta {
@@ -148,11 +154,11 @@
     .typing-indicator {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.04);
-      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.4);
       font-size: 11px;
       color: var(--text-sub);
     }
@@ -174,7 +180,7 @@
     }
 
     .quick-hints {
-      padding: 0 18px 4px;
+      padding: 0 18px 6px;
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
@@ -198,7 +204,7 @@
 
     .input-area {
       border-top: 1px solid rgba(226, 232, 240, 0.9);
-      padding: 8px 10px 10px;
+      padding: 10px 12px 12px;
       background: rgba(248, 250, 252, 0.98);
       display: flex;
       flex-direction: column;
@@ -207,7 +213,7 @@
 
     .input-row {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: flex-end;
     }
 
@@ -219,14 +225,14 @@
     textarea {
       width: 100%;
       resize: none;
-      min-height: 40px;
+      min-height: 42px;
       max-height: 120px;
-      padding: 8px 36px 8px 10px;
-      border-radius: 16px;
+      padding: 9px 40px 9px 12px;
+      border-radius: 18px;
       border: 1px solid var(--border);
       font-family: inherit;
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.5;
       outline: none;
       background: #ffffff;
     }
@@ -249,9 +255,9 @@
     }
 
     .send-button {
-      width: 40px;
-      height: 40px;
-      border-radius: 16px;
+      width: 42px;
+      height: 42px;
+      border-radius: 18px;
       border: none;
       background: var(--primary);
       color: white;
@@ -260,7 +266,7 @@
       justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.45);
       transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.1s ease-out;
     }
 
@@ -272,7 +278,7 @@
 
     .send-button:not(:disabled):active {
       transform: translateY(1px) scale(0.98);
-      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
     }
 
     .footer-note {
@@ -282,58 +288,10 @@
       padding: 0 4px 2px;
     }
 
-    .api-key-bar {
-      padding: 6px 14px 2px;
-      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-      background: rgba(248, 250, 252, 0.96);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 11px;
-      color: var(--text-sub);
-    }
-
-    .api-key-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .api-key-input {
-      flex: 1;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      font-size: 12px;
-      font-family: inherit;
-    }
-
-    .api-key-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
-    }
-
-    .api-key-button {
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: none;
-      background: var(--primary);
-      color: #ffffff;
-      font-size: 11px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .api-key-status {
-      font-size: 10px;
-      color: var(--text-sub);
-    }
-
     @media (max-width: 600px) {
       body {
         padding: 0;
-        background: #f5f7fb;
+        background: #f7f6f3;
       }
       .app-shell {
         border-radius: 0;
@@ -345,6 +303,7 @@
       }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
   <div class="app-shell">
@@ -362,20 +321,6 @@
     </header>
 
     <main class="app-body">
-      <div class="api-key-bar">
-        <div class="api-key-row">
-          <input
-            id="api-key-input"
-            class="api-key-input"
-            type="password"
-            placeholder="여기에 Claude API 키를 입력하세요. (브라우저 localStorage에만 저장됩니다)"
-          />
-          <button id="api-key-save" class="api-key-button">키 저장</button>
-        </div>
-        <div id="api-key-status" class="api-key-status">
-          API 키가 설정되지 않았습니다. 대화를 시작하기 전에 키를 입력해 주세요.
-        </div>
-      </div>
       <div id="messages" class="messages"></div>
 
       <div class="quick-hints">
@@ -415,88 +360,12 @@
   </div>
 
   <script>
-    // Claude API 키는 브라우저 localStorage에 저장·사용됩니다.
-    const API_URL = "https://api.anthropic.com/v1/messages";
-    const MODEL_NAME = "claude-haiku-4-5-20251001";
-
-    const SYSTEM_PROMPT = `너는 대전전민고등학교 교무업무 챗봇이야. 아래 학교 업무 규정을 참고해서 교직원의 질문에 친절하고 정확하게 답변해. 규정에 없는 내용은 "해당 내용은 규정에 명시되어 있지 않습니다. 교무실에 직접 문의해주세요."라고 안내해. 답변은 간결하게 핵심만 말해줘.
-
-【복무 결재 라인】
-
-교사 외출: 본인 → 소속부장
-교사 지참/조퇴/근무지내출장: 본인 → 소속부장 → 교감
-교사 근무지외출장: 본인 → 소속부장 → 교감 → 교장
-부장 외출/지참/조퇴/근무지내출장: 본인 → 교감
-부장 근무지외출장: 본인 → 교감 → 교장
-시간외근무: 본인 → 소속부장 → 교감
-자녀돌봄/육아시간: 본인 → 교무운영부장 → 교감 → 교장 (※ 당일 4시간 이상 반드시 근무)
-제41조 연수: 본인 → 연구부장 → 교감
-EVPN(원격업무): 본인 → 과학정보부장 → 교감
-각종 휴가·병가·연가: 사전에 교감·교장 구두 상의 후 복무 등록 → 교무운영부장 → 교감 → 교장
-
-【수업 결강 처리】
-
-교감, 학년부장, 일과계에 전화·문자로 사전 연락 필수
-동아리·방과후 수업 있으면 해당 담당교사에게도 전달
-보강 수당: 시간당 15,000원 (창체 제외)
-결·보강 원칙: 개인이 수업교체 → 동일교과교사 → 당일 수업 적은 담임 → 비교과 순
-
-【시간외 근무 신청 (나이스)】
-
-평일: 나이스 → 시간외근무(휴일 체크 안함) → 16:00 이후 시간 지정 → 사유 작성 → 승인 요청 (1시간 공제 후 최대 4시간)
-공휴일: 시간외근무(휴일 체크함) → 시간 지정 (1시간 공제 없음, 최대 4시간)
-결재라인: 본인 → 소속부장 → 교감
-
-【시간외 근무 퇴근 처리】
-
-당직실(본동 1층) 입력기에서 퇴근모드(F2) 확인
-ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리 입력
-주말·공휴일에는 출근모드도 반드시 처리
-
-【예산 사용 결재】
-
-50만원 이하: 본인 → 소속부장 → 행정실장(협조) → 교감
-50만원 초과: 본인 → 소속부장 → 행정실장(협조) → 교감 → 교장
-인터넷 주문 시: 품의결재 후 행정과정(김경중T)에게 안내 (장바구니 캡처 첨부)
-
-【가정통신문 결재】
-
-본인 → 담당부서부장 → 교무운영부장(협조) → 교감 → 교장
-반드시 "직인생략" 표시, 학교 홈페이지 탑재 (리로스쿨 자동 탑재)
-
-【회의 일정】
-
-학년부장회의: 매주 목요일 15:10, 교장실
-전체부장회의: 매주 금요일 2교시, 교장실
-교직원회의: 매월 공동체의 날(금요일), 한솔공동체실(1층)
-
-【출결 처리 기준】
-
-나이스 지각 기준: 08:10
-결과: 수업 시간 10분 초과 불참
-미인정결석: ~2일 유선연락 / 3~6일 가정방문·학년부장·교감 보고 / 연속 7일 이상 교육감 보고
-출결확인서 제출: 출석 당일부터 5일 이내
-교무학적담당: 최지혜T / 상담교사: 전주영T
-
-【학교 기본 정보】
-
-대표전화: 870-0114 / FAX: 382-0254
-주소: 대전광역시 유성구 전민로 63
-학교번호: 고28 (16145)
-리로스쿨 문자: 단문 12원 / 장문 36원 / 앱 0원
-시교육청 인편 제출: 매주 목요일 (전날까지 인쇄실 성열창T에게 제출, 목요일 12시 마감)`;
-
     const messagesEl = document.getElementById("messages");
     const inputEl = document.getElementById("user-input");
     const sendButton = document.getElementById("send-button");
     const hintButtons = document.querySelectorAll(".hint-chip");
-    const apiKeyInputEl = document.getElementById("api-key-input");
-    const apiKeySaveButton = document.getElementById("api-key-save");
-    const apiKeyStatusEl = document.getElementById("api-key-status");
 
-    let apiKey = null;
-
-    // 대화 히스토리
+    // 대화 히스토리 (프론트에서 관리, 서버로 전달)
     const conversation = [];
 
     function appendMessage(role, text) {
@@ -505,7 +374,18 @@ ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리
 
       const bubble = document.createElement("div");
       bubble.className = "message-bubble";
-      bubble.textContent = text;
+
+      if (role === "bot") {
+        // 챗봇 응답은 마크다운으로 렌더링
+        try {
+          bubble.innerHTML = marked.parse(text || "");
+        } catch (e) {
+          bubble.textContent = text;
+        }
+      } else {
+        // 사용자 메시지는 그대로 텍스트로 렌더링
+        bubble.textContent = text;
+      }
 
       row.appendChild(bubble);
       messagesEl.appendChild(row);
@@ -553,47 +433,9 @@ ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리
       sendButton.disabled = !enabled;
     }
 
-    function loadApiKeyFromStorage() {
-      try {
-        const stored = localStorage.getItem("claude_api_key");
-        if (stored && typeof stored === "string") {
-          apiKey = stored;
-          if (apiKeyStatusEl) {
-            apiKeyStatusEl.textContent = "저장된 API 키가 감지되었습니다. 바로 대화를 시작할 수 있습니다.";
-          }
-        }
-      } catch (e) {
-        console.warn("localStorage에서 API 키를 불러오는 중 오류:", e);
-      }
-    }
-
-    function saveApiKey() {
-      const value = apiKeyInputEl.value.trim();
-      if (!value) {
-        alert("API 키를 입력해 주세요.");
-        return;
-      }
-      apiKey = value;
-      try {
-        localStorage.setItem("claude_api_key", value);
-      } catch (e) {
-        console.warn("localStorage에 API 키를 저장하는 중 오류:", e);
-      }
-      if (apiKeyStatusEl) {
-        apiKeyStatusEl.textContent = "API 키가 저장되었습니다. 이제 대화를 시작할 수 있습니다.";
-      }
-      apiKeyInputEl.value = "";
-    }
-
     async function sendMessage() {
       const userText = inputEl.value.trim();
       if (!userText) return;
-
-      if (!apiKey) {
-        alert("Claude API 키가 설정되지 않았습니다. 상단 입력창에 키를 입력 후 '키 저장' 버튼을 눌러 주세요.");
-        apiKeyInputEl.focus();
-        return;
-      }
 
       // UI 업데이트
       appendMessage("user", userText);
@@ -608,31 +450,12 @@ ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리
       });
 
       try {
-        // Claude Messages API 요청 페이로드 구성
-        const payload = {
-          model: MODEL_NAME,
-          max_tokens: 1024,
-          temperature: 0.6,
-          system: SYSTEM_PROMPT,
-          messages: conversation.map((m) => ({
-            role: m.role,
-            content: [
-              {
-                type: "text",
-                text: m.content
-              }
-            ]
-          }))
-        };
-
-        const response = await fetch(API_URL, {
+        const response = await fetch("/api/chat", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01"
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ conversation })
         });
 
         if (!response.ok) {
@@ -641,18 +464,9 @@ ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리
         }
 
         const data = await response.json();
-        // Claude Messages API 응답 파싱
-        let replyText = "";
-        if (Array.isArray(data.content)) {
-          replyText = data.content
-            .filter((block) => block && block.type === "text" && typeof block.text === "string")
-            .map((block) => block.text)
-            .join("\n")
-            .trim();
-        } else if (data.content && typeof data.content === "string") {
-          replyText = data.content;
-        } else {
-          replyText = "(응답을 해석할 수 없습니다. Claude API 응답 형식을 확인해 주세요.)";
+        let replyText = data.reply || "";
+        if (!replyText) {
+          replyText = "(응답이 비어 있습니다. 서버 로그를 확인해 주세요.)";
         }
 
         conversation.push({
@@ -665,8 +479,12 @@ ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리
       } catch (err) {
         console.error(err);
         removeTypingIndicator();
-        appendMessage("bot", "죄송합니다. 답변을 가져오는 중 오류가 발생했습니다.\n\n" +
-          "에러 메시지: " + (err && err.message ? err.message : String(err)));
+        appendMessage(
+          "bot",
+          "죄송합니다. 답변을 가져오는 중 오류가 발생했습니다.\n\n" +
+            "에러 메시지: " +
+            (err && err.message ? err.message : String(err))
+        );
       } finally {
         setInputEnabled(true);
         inputEl.focus();
@@ -709,26 +527,15 @@ ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리
       });
     });
 
-    apiKeySaveButton.addEventListener("click", () => {
-      saveApiKey();
-    });
-
-    apiKeyInputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        saveApiKey();
-      }
-    });
-
     // 모바일에서 키보드 열렸을 때도 하단이 잘 보이도록 자동 스크롤
     window.addEventListener("resize", () => {
       messagesEl.scrollTop = messagesEl.scrollHeight;
     });
 
     // 시작 시
-    loadApiKeyFromStorage();
     initWelcome();
     inputEl.focus();
   </script>
 </body>
 </html>
+
