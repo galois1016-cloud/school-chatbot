@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>대전전민고등학교 교무업무 챗봇</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --primary: #2563eb;
+      --primary-soft: #e0ebff;
+      --border: #d4d4d8;
+      --text-main: #111827;
+      --text-sub: #6b7280;
+      --user-bubble: #2563eb;
+      --bot-bubble: #ffffff;
+      --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius-lg: 18px;
+      --radius-full: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0e7ff 0, #f5f7fb 45%, #ffffff 100%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 640px;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .app-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(120deg, rgba(37, 99, 235, 0.06), rgba(249, 250, 251, 0.96));
+    }
+
+    .bot-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 30% 20%, #ffffff 0, #dbeafe 40%, #2563eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.45);
+    }
+
+    .header-text-main {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .online-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #16a34a;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .header-text-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .app-body {
+      display: flex;
+      flex-direction: column;
+      height: min(80vh, 620px);
+    }
+
+    .messages {
+      flex: 1;
+      padding: 14px 16px 8px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .message-row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-bubble {
+      max-width: 82%;
+      padding: 8px 12px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .message-row.bot .message-bubble {
+      background: var(--bot-bubble);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-bottom-left-radius: 4px;
+      color: var(--text-main);
+    }
+
+    .message-row.user .message-bubble {
+      background: var(--user-bubble);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-meta {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .typing-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: #9ca3af;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-3px); opacity: 1; }
+    }
+
+    .quick-hints {
+      padding: 0 18px 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .hint-chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px dashed rgba(148, 163, 184, 0.8);
+      background: rgba(248, 250, 252, 0.9);
+      color: #4b5563;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .hint-chip:hover {
+      background: #eff6ff;
+      border-style: solid;
+    }
+
+    .input-area {
+      border-top: 1px solid rgba(226, 232, 240, 0.9);
+      padding: 8px 10px 10px;
+      background: rgba(248, 250, 252, 0.98);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .text-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    textarea {
+      width: 100%;
+      resize: none;
+      min-height: 40px;
+      max-height: 120px;
+      padding: 8px 36px 8px 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.4;
+      outline: none;
+      background: #ffffff;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    }
+
+    .enter-hint {
+      position: absolute;
+      right: 8px;
+      bottom: 6px;
+      font-size: 10px;
+      color: var(--text-sub);
+      background: rgba(248, 250, 252, 0.95);
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(209, 213, 219, 0.9);
+    }
+
+    .send-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 16px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.1s ease-out;
+    }
+
+    .send-button:disabled {
+      background: #9ca3af;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .send-button:not(:disabled):active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.4);
+    }
+
+    .footer-note {
+      font-size: 11px;
+      color: var(--text-sub);
+      text-align: center;
+      padding: 0 4px 2px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 0;
+        background: #f5f7fb;
+      }
+      .app-shell {
+        border-radius: 0;
+        max-width: 100%;
+        height: 100vh;
+      }
+      .app-body {
+        height: calc(100vh - 70px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="bot-avatar">校</div>
+      <div>
+        <div class="header-text-main">
+          대전전민고등학교 교무업무 챗봇
+          <span class="online-pill">교직원 전용 상담</span>
+        </div>
+        <div class="header-text-sub">
+          교직원 복무·결재·행정 업무 관련 질문을 도와드립니다.
+        </div>
+      </div>
+    </header>
+
+    <main class="app-body">
+      <div id="messages" class="messages"></div>
+
+      <div class="quick-hints">
+        <button class="hint-chip" data-text="교직원 복무 규정에서 근무시간과 초과근무 기준을 알려줘.">
+          복무 규정 · 근무시간
+        </button>
+        <button class="hint-chip" data-text="출장 시 결재 라인과 필요한 서류를 단계별로 설명해줘.">
+          출장 · 결재 라인
+        </button>
+        <button class="hint-chip" data-text="학사 관련 공문 작성 시 기본 형식과 자주 쓰는 표현을 알려줘.">
+          공문 작성 도움
+        </button>
+        <button class="hint-chip" data-text="재택근무나 시차출퇴근이 가능한 상황과 신청 절차를 알려줘.">
+          재택·시차출퇴근
+        </button>
+      </div>
+
+      <section class="input-area">
+        <div class="input-row">
+          <div class="text-input-wrapper">
+            <textarea
+              id="user-input"
+              rows="1"
+              placeholder="교직원 복무 규정, 결재 라인, 행정 업무에 대해 질문해 보세요."
+            ></textarea>
+            <div class="enter-hint">Enter 전송 / Shift+Enter 줄바꿈</div>
+          </div>
+          <button id="send-button" class="send-button" aria-label="메시지 전송">
+            ▶
+          </button>
+        </div>
+        <div class="footer-note">
+          실제 규정·내부 지침과 다를 수 있으니 최종 확인은 학교 공식 문서를 참고하세요.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById("messages");
+    const inputEl = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    const hintButtons = document.querySelectorAll(".hint-chip");
+
+    // 대화 히스토리 (프론트에서 관리, 서버로 전달)
+    const conversation = [];
+
+    function appendMessage(role, text) {
+      const row = document.createElement("div");
+      row.className = "message-row " + (role === "user" ? "user" : "bot");
+
+      const bubble = document.createElement("div");
+      bubble.className = "message-bubble";
+      bubble.textContent = text;
+
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function appendTypingIndicator() {
+      const row = document.createElement("div");
+      row.className = "message-row bot";
+      row.id = "typing-row";
+
+      const indicator = document.createElement("div");
+      indicator.className = "typing-indicator";
+
+      const text = document.createElement("span");
+      text.textContent = "학교 도우미가 답변을 작성 중";
+
+      const dot1 = document.createElement("div");
+      const dot2 = document.createElement("div");
+      const dot3 = document.createElement("div");
+      dot1.className = "typing-dot";
+      dot2.className = "typing-dot";
+      dot3.className = "typing-dot";
+
+      indicator.appendChild(text);
+      indicator.appendChild(dot1);
+      indicator.appendChild(dot2);
+      indicator.appendChild(dot3);
+
+      row.appendChild(indicator);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const row = document.getElementById("typing-row");
+      if (row) {
+        row.remove();
+      }
+    }
+
+    function setInputEnabled(enabled) {
+      inputEl.disabled = !enabled;
+      sendButton.disabled = !enabled;
+    }
+
+    async function sendMessage() {
+      const userText = inputEl.value.trim();
+      if (!userText) return;
+
+      // UI 업데이트
+      appendMessage("user", userText);
+      inputEl.value = "";
+      setInputEnabled(false);
+      appendTypingIndicator();
+
+      // 대화 히스토리에 추가
+      conversation.push({
+        role: "user",
+        content: userText
+      });
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ conversation })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text().catch(() => "");
+          throw new Error("API 오류: " + response.status + " " + errorText);
+        }
+
+        const data = await response.json();
+        let replyText = data.reply || "";
+        if (!replyText) {
+          replyText = "(응답이 비어 있습니다. 서버 로그를 확인해 주세요.)";
+        }
+
+        conversation.push({
+          role: "assistant",
+          content: replyText
+        });
+
+        removeTypingIndicator();
+        appendMessage("bot", replyText);
+      } catch (err) {
+        console.error(err);
+        removeTypingIndicator();
+        appendMessage(
+          "bot",
+          "죄송합니다. 답변을 가져오는 중 오류가 발생했습니다.\n\n" +
+            "에러 메시지: " +
+            (err && err.message ? err.message : String(err))
+        );
+      } finally {
+        setInputEnabled(true);
+        inputEl.focus();
+      }
+    }
+
+    // 초기 환영 메시지
+    function initWelcome() {
+      const welcome =
+        "안녕하세요, 대전전민고등학교 교무업무 챗봇입니다.\n\n" +
+        "교직원 복무 규정, 결재 라인, 공문 작성, 행정 업무 절차 등에 대해 편하게 질문해 주세요.\n\n" +
+        "예시)\n- 연가·병가 사용 시 결재 라인과 절차가 어떻게 되나요?\n" +
+        "- 출장 신청부터 정산까지 필요한 서류와 순서를 알려주세요.\n" +
+        "- 학사 관련 공문을 쓸 때 기본 형식과 자주 쓰는 표현이 궁금합니다.";
+      appendMessage("bot", welcome);
+
+      conversation.push({
+        role: "assistant",
+        content: welcome
+      });
+    }
+
+    // 이벤트 핸들러 설정
+    sendButton.addEventListener("click", () => {
+      sendMessage();
+    });
+
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    hintButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const text = btn.getAttribute("data-text") || "";
+        inputEl.value = text;
+        inputEl.focus();
+      });
+    });
+
+    // 모바일에서 키보드 열렸을 때도 하단이 잘 보이도록 자동 스크롤
+    window.addEventListener("resize", () => {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    });
+
+    // 시작 시
+    initWelcome();
+    inputEl.focus();
+  </script>
+</body>
+</html>
+
