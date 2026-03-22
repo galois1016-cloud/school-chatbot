@@ -73,6 +73,16 @@ ID: 개인번호 G10 제외 7자리 입력 → 비밀번호란에 다시 7자리
 시교육청 인편 제출: 매주 목요일 (전날까지 인쇄실 성열창T에게 제출, 목요일 12시 마감)`;
 
 module.exports = async (req, res) => {
+  // CORS 헤더 추가
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // preflight 요청 처리
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method Not Allowed" });
